@@ -32,6 +32,11 @@ function App() {
     value === '' && setFilteredCountries([{ name: '' }])
   }
 
+  const handleCountryButton = (event) => {
+    const targetCountry = countries.filter((x) => x.name === event.target.id)
+    setFilteredCountries(targetCountry)
+  }
+
   const countryCount =
     filteredCountries.length === 1
       ? filteredCountries.map((val, i) => (
@@ -45,7 +50,7 @@ function App() {
           />
         ))
       : filteredCountries.map((val, i) => (
-          <Countries key={i} value={val.name} />
+          <Countries key={i} value={val.name} onClick={handleCountryButton} />
         ))
 
   return (
