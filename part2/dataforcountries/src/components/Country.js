@@ -1,3 +1,5 @@
+import Weather from './Weather'
+
 const Country = ({ name, capital, population, language, flag }) => {
   let languages
   language
@@ -13,6 +15,7 @@ const Country = ({ name, capital, population, language, flag }) => {
         <h3>languages</h3>
         <ul>{languages}</ul>
         <img src={flag} alt="flag" style={{ width: '50%', height: '50%' }} />
+        <Weather name={name} />
       </>
     )
   } else {
