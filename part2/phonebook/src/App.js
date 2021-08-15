@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios'
+import numberService from './numberService'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,8 +12,8 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
 
   const getPersons = () => {
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data)
+    numberService.getAll().then((response) => {
+      setPersons(response)
     })
   }
 
@@ -24,12 +24,14 @@ const App = () => {
     const isIncludePerson = persons.every((person) => person.name !== newName)
 
     if (newName !== '' && isIncludePerson) {
-      setPersons(
-        persons.concat({
-          name: newName,
-          number: newNumber,
-        })
-      )
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      }
+
+      setPersons(persons.concat(newPerson))
+      numberService.create(newPerson)
+
       setNewNumber('')
       setNewName('')
     } else if (newName === '') {
