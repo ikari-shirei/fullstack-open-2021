@@ -1,14 +1,12 @@
 import Person from './Person'
 
-const Persons = ({ personsToShow }) => {
+const Persons = ({ personsToShow, onClick }) => {
   return (
-    <table>
-      <tbody>
-        {personsToShow.map((person) => (
-          <Person key={person.name} person={person} />
-        ))}
-      </tbody>
-    </table>
+    <div>
+      {personsToShow.map((person) => (
+        <Person key={person.name} person={person} onClick={onClick} />
+      ))}
+    </div>
   )
 }
 

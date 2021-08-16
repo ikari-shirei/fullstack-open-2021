@@ -37,7 +37,35 @@ const App = () => {
     } else if (newName === '') {
       alert('Please enter a value')
     } else {
-      alert(`${newName} is already added to phonebook`)
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with the new one?`
+        )
+      ) {
+        const changedPerson = persons.find((person) => person.name === newName)
+        const changedNumber = { ...changedPerson, number: newNumber }
+
+        const id = changedNumber.id
+
+        numberService
+          .update(id, changedNumber)
+          .then((updatedNumber) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== id ? person : updatedNumber
+              )
+            )
+
+            setNewNumber('')
+            setNewName('')
+          })
+          .catch((error) => {
+            alert(
+              `the note '${changedNumber.name}' was already deleted from server`
+            )
+            setPersons(persons.filter((n) => n.id !== id))
+          })
+      }
     }
   }
 
@@ -51,6 +79,20 @@ const App = () => {
 
   const handleFilter = (event) => {
     setNewFilter(event.target.value)
+  }
+
+  const handleDeleteButton = (event) => {
+    const targetName = event.target.id
+
+    if (window.confirm(`Delete ${targetName}?`)) {
+      const newPersons = persons.filter((person) => person.name !== targetName)
+      setPersons(newPersons)
+
+      const targetObj = persons.find((person) =>
+        person.name === targetName ? person : ''
+      )
+      numberService.deleteTarget(targetObj.id, targetObj)
+    }
   }
 
   const personsToShow =
@@ -73,7 +115,7 @@ const App = () => {
         handleNewNumber={handleNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} onClick={handleDeleteButton} />
     </div>
   )
 }
