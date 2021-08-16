@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import numberService from './numberService'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [newNotification, setNewNotification] = useState(null)
 
   const getPersons = () => {
     numberService.getAll().then((response) => {
@@ -18,6 +20,13 @@ const App = () => {
   }
 
   useEffect(getPersons, [])
+
+  const createNotification = (message, color) => {
+    setNewNotification([message, color])
+    setTimeout(() => {
+      setNewNotification(null)
+    }, 5000)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -42,8 +51,10 @@ const App = () => {
       numberService.create(newPerson)
 
       clearFormData()
+
+      createNotification(`Added ${newPerson.name}`, 'green')
     } else if (isNewName) {
-      alert('Please enter a value')
+      createNotification('Please enter a value', 'red')
     } else {
       const confirmMessage = `${newName} is already added to phonebook, replace the old number with the new one?`
 
@@ -61,8 +72,8 @@ const App = () => {
                 person.id !== id ? person : updatedNumber
               )
             )
-
             clearFormData()
+            createNotification(`Updated ${changedPerson.name}`, 'green')
           })
           .catch((e) => {
             const errorMessage = `the note '${changedNumber.name}' was already deleted from server`
@@ -96,7 +107,12 @@ const App = () => {
         person.name === targetName ? person : ''
       )
 
-      numberService.deleteTarget(targetObj.id, targetObj)
+      numberService.deleteTarget(targetObj.id, targetObj).catch((err) => {
+        createNotification(
+          `Information of ${targetName} has already been removed from server`,
+          'red'
+        )
+      })
     }
   }
 
@@ -110,6 +126,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={newNotification} />
       <Filter onChange={handleFilter} />
       <h2>add a new</h2>
       <PersonForm
