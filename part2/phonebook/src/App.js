@@ -23,25 +23,31 @@ const App = () => {
     event.preventDefault()
     const isIncludePerson = persons.every((person) => person.name !== newName)
 
-    if (newName !== '' && isIncludePerson) {
+    const clearFormData = () => {
+      setNewNumber('')
+      setNewName('')
+    }
+
+    const isNewName = newName === ''
+
+    if (!isNewName && isIncludePerson) {
       const newPerson = {
         name: newName,
         number: newNumber,
+        // JSON server can't generate ID unless refresh the page
+        id: persons[0] ? persons[persons.length - 1].id + 1 : 1,
       }
 
       setPersons(persons.concat(newPerson))
       numberService.create(newPerson)
 
-      setNewNumber('')
-      setNewName('')
-    } else if (newName === '') {
+      clearFormData()
+    } else if (isNewName) {
       alert('Please enter a value')
     } else {
-      if (
-        window.confirm(
-          `${newName} is already added to phonebook, replace the old number with the new one?`
-        )
-      ) {
+      const confirmMessage = `${newName} is already added to phonebook, replace the old number with the new one?`
+
+      if (window.confirm(confirmMessage)) {
         const changedPerson = persons.find((person) => person.name === newName)
         const changedNumber = { ...changedPerson, number: newNumber }
 
@@ -56,13 +62,11 @@ const App = () => {
               )
             )
 
-            setNewNumber('')
-            setNewName('')
+            clearFormData()
           })
-          .catch((error) => {
-            alert(
-              `the note '${changedNumber.name}' was already deleted from server`
-            )
+          .catch((e) => {
+            const errorMessage = `the note '${changedNumber.name}' was already deleted from server`
+            alert(errorMessage)
             setPersons(persons.filter((n) => n.id !== id))
           })
       }
@@ -91,6 +95,7 @@ const App = () => {
       const targetObj = persons.find((person) =>
         person.name === targetName ? person : ''
       )
+
       numberService.deleteTarget(targetObj.id, targetObj)
     }
   }
