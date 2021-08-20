@@ -43,12 +43,11 @@ const App = () => {
       const newPerson = {
         name: newName,
         number: newNumber,
-        // JSON server can't generate ID unless refresh the page
-        id: persons[0] ? persons[persons.length - 1].id + 1 : 1,
       }
 
-      setPersons(persons.concat(newPerson))
       numberService.create(newPerson)
+      // set all persons
+      getPersons()
 
       clearFormData()
 
