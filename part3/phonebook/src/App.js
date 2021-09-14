@@ -53,8 +53,6 @@ const App = () => {
         .catch((error) => {
           createNotification(`${error.response.data.error}`, 'red')
         })
-      // set all persons
-      getPersons()
 
       clearFormData()
     } else if (isNewName) {
@@ -86,6 +84,11 @@ const App = () => {
           })
       }
     }
+
+    // set all persons
+    setTimeout(function () {
+      getPersons()
+    }, 100)
   }
 
   const handleNewName = (event) => {
