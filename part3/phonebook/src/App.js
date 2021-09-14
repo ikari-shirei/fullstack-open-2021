@@ -45,13 +45,18 @@ const App = () => {
         number: newNumber,
       }
 
-      numberService.create(newPerson)
+      numberService
+        .create(newPerson)
+        .then((createdPerson) => {
+          createNotification(`Added ${newPerson.name}`, 'green')
+        })
+        .catch((error) => {
+          createNotification(`${error.response.data.error}`, 'red')
+        })
       // set all persons
       getPersons()
 
       clearFormData()
-
-      createNotification(`Added ${newPerson.name}`, 'green')
     } else if (isNewName) {
       createNotification('Please enter a value', 'red')
     } else {
@@ -74,9 +79,9 @@ const App = () => {
             clearFormData()
             createNotification(`Updated ${changedPerson.name}`, 'green')
           })
-          .catch((e) => {
-            const errorMessage = `the note '${changedNumber.name}' was already deleted from server`
-            alert(errorMessage)
+          .catch((error) => {
+            const errorMessage = `${error.response.data.error}`
+            createNotification(errorMessage, 'red')
             setPersons(persons.filter((n) => n.id !== id))
           })
       }
